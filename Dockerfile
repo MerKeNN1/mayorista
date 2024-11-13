@@ -7,4 +7,4 @@ COPY target/ferreteria-api-1.0-SNAPSHOT.jar /app/ferreteria-api.jar
 # Expone el puerto 8080 
 EXPOSE 8080 
 # Define el comando para ejecutar la aplicación 
-ENTRYPOINT ["java", "-jar", "ferreteria-api.jar"]
+ENTRYPOINT ["java", "-jar", "/app/ferreteria-api.jar"]
