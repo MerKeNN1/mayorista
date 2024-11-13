@@ -8,8 +8,6 @@ import com.google.firebase.cloud.FirestoreClient;
 import java.io.ByteArrayInputStream;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
