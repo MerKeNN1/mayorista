@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion> 
-    <groupId>com.mycompany</groupId> 
-    <artifactId>ferreteria-api</artifactId> 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.mycompany</groupId>
+    <artifactId>ferreteria-api</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -11,7 +12,7 @@
         <maven.compiler.target>11</maven.compiler.target> <!-- Cambiar a 11 -->
         <java.version>11</java.version> <!-- Cambiar a 11 -->
         <spring-boot.version>2.6.7</spring-boot.version> <!-- Usa la versión más reciente disponible -->
-        <start-class>com.mycompany.ferreteria.api.Application</start-class> 
+        <start-class>com.mycompany.ferreteria.api.Application</start-class>
     </properties>
 
     <dependencies>
@@ -54,26 +55,18 @@
     <build>
         <plugins>
             <!-- Plugin de Spring Boot -->
-            <plugin> 
-                <groupId>org.springframework.boot</groupId> 
-                <artifactId>spring-boot-maven-plugin</artifactId> 
-                <version>2.5.4</version> 
-                <executions> 
-                    <execution> 
-                        <goals> 
-                            <goal>repackage</goal> 
-                        </goals> 
-                    </execution> 
-                </executions> 
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-            
-           
-            
         </plugins>
     </build>
-    
-    
-     
-   
-    
 </project>
