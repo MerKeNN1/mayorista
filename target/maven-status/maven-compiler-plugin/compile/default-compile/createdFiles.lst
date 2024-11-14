@@ -1,8 +1,8 @@
-com\mycompany\ferreteria\api\PaymentDTO.class
-com\mycompany\ferreteria\api\Application.class
-com\mycompany\ferreteria\api\FirebaseConfig.class
-com\mycompany\ferreteria\api\SolicitudDTO.class
-com\mycompany\ferreteria\api\ProductoDTO.class
-com\mycompany\ferreteria\api\ProductoController.class
-com\mycompany\ferreteria\api\SolicitudDTO$ItemSolicitud.class
-com\mycompany\ferreteria\api\SolicitudController.class
+apii\PaymentDTO.class
+apii\Application.class
+apii\SolicitudDTO$ItemSolicitud.class
+apii\ProductoDTO.class
+apii\SolicitudDTO.class
+apii\ProductoController.class
+apii\FirebaseConfig.class
+apii\SolicitudController.class
