@@ -1,17 +1,16 @@
-<<<<<<< HEAD
 FROM openjdk:11-jre-slim
 
 WORKDIR /app
 
-COPY target/ferreteria-api-1.0-SNAPSHOT.jar /app/ferreteria-api.jar
+# Actualiza la ruta y el nombre del JAR según el nuevo nombre del proyecto
+COPY target/API-1.0-SNAPSHOT.jar /app/api.jar
 
-RUN ls -la /app && cat /app/ferreteria-api.jar
-
-=======
-FROM openjdk:11-jre-slim 
-WORKDIR /app 
-COPY target/ferreteria-api-1.0-SNAPSHOT.jar /app/ferreteria-api.jar 
-EXPOSE 8080 
+# Añadir comandos de depuración para verificar el contenido
 RUN ls -la /app && echo "Contents of /app listed"
->>>>>>> 6c7548bb7910c3bed8212e043b51f791338a2284
-ENTRYPOINT ["java", "-jar", "/app/ferreteria-api.jar"]
+
+# Exponer el puerto de la aplicación
+EXPOSE 8080
+
+# Definir el comando de entrada para ejecutar la aplicación
+ENTRYPOINT ["java", "-jar", "/app/api.jar"]
+
