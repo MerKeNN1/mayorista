@@ -2,25 +2,33 @@ package apii;
 
 public class ProductoDTO {
     private String CodigoBarras;
-    private String categoria;
-    private String descripcion;
-    private String marca;
-    private String nombre;
-    private Double precio;
-    private Integer inventario;
+    private String Categoria;
+    private String Descripcion;
+    private String Marca;
+    private String Nombre;
+    private Double Precio1;
+    private Integer Inventario;
+    private Double Costo;
+    private Double Precio2;
+    private Double Precio3;
+    private String Proveedor;
 
     // Constructor vacío
     public ProductoDTO() {}
 
     // Constructor con todos los campos
-    public ProductoDTO(String CodigoBarras, String categoria, String descripcion, String marca, String nombre, Double precio,  Integer inventario) {
+    public ProductoDTO(String CodigoBarras, String Categoria, String Descripcion, String Marca, String Nombre, Double Precio1, Integer Inventario, Double Costo, Double Precio2, Double Precio3, String Proveedor) {
         this.CodigoBarras = CodigoBarras;
-        this.categoria = categoria;
-        this.descripcion = descripcion;
-        this.marca = marca;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.inventario = inventario;
+        this.Categoria = Categoria;
+        this.Descripcion = Descripcion;
+        this.Marca = Marca;
+        this.Nombre = Nombre;
+        this.Precio1 = Precio1;
+        this.Inventario = Inventario;
+        this.Costo = Costo;
+        this.Precio2 = Precio2;
+        this.Precio3 = Precio3;
+        this.Proveedor = Proveedor;
     }
 
     // Getters y Setters
@@ -33,52 +41,82 @@ public class ProductoDTO {
     }
 
     public String getCategoria() {
-        return categoria;
+        return Categoria;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setCategoria(String Categoria) {
+        this.Categoria = Categoria;
     }
 
     public String getDescripcion() {
-        return descripcion;
+        return Descripcion;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setDescripcion(String Descripcion) {
+        this.Descripcion = Descripcion;
     }
 
     public String getMarca() {
-        return marca;
+        return Marca;
     }
 
-    public void setMarca(String marca) {
-        this.marca = marca;
+    public void setMarca(String Marca) {
+        this.Marca = Marca;
     }
 
     public String getNombre() {
-        return nombre;
+        return Nombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombre(String Nombre) {
+        this.Nombre = Nombre;
     }
 
-    public Double getPrecio() {
-        return precio;
+    public Double getPrecio1() {
+        return Precio1;
     }
 
-    public void setPrecio(Double precio) {
-        this.precio = precio;
+    public void setPrecio1(Double Precio1) {
+        this.Precio1 = Precio1;
     }
-
 
     public Integer getInventario() {
-        return inventario;
+        return Inventario;
     }
 
-    public void setInventario(Integer inventario) {
-        this.inventario = inventario;
+    public void setInventario(Integer Inventario) {
+        this.Inventario = Inventario;
     }
 
+    public Double getCosto() {
+        return Costo;
+    }
+
+    public void setCosto(Double Costo) {
+        this.Costo = Costo;
+    }
+
+    public Double getPrecio2() {
+        return Precio2;
+    }
+
+    public void setPrecio2(Double Precio2) {
+        this.Precio2 = Precio2;
+    }
+
+    public Double getPrecio3() {
+        return Precio3;
+    }
+
+    public void setPrecio3(Double Precio3) {
+        this.Precio3 = Precio3;
+    }
+
+    public String getProveedor() {
+        return Proveedor;
+    }
+
+    public void setProveedor(String Proveedor) {
+        this.Proveedor = Proveedor;
+    }
 }

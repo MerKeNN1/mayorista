@@ -23,7 +23,6 @@ public class SolicitudDTO {
         this.estado = estado;
     }
 
-
     // Getters y Setters
     public String getClienteId() {
         return clienteId;
@@ -56,7 +55,7 @@ public class SolicitudDTO {
     public void setEstado(String estado) {
         this.estado = estado;
     }
-    
+
     // Clase interna para representar cada ítem de la solicitud
     public static class ItemSolicitud {
         private String CodigoBarras;

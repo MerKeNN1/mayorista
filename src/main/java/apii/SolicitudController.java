@@ -41,9 +41,14 @@ public class SolicitudController {
         CollectionReference productosRef = db.collection("Productos");
         CollectionReference solicitudes = db.collection("Solicitudes");
 
+        // Log de depuración para verificar el contenido del objeto solicitud
+        System.out.println("Recibida solicitud de cliente: " + solicitud.getClienteId());
+        for (SolicitudDTO.ItemSolicitud item : solicitud.getItems()) {
+            System.out.println("Item - CodigoBarras: " + item.getCodigoBarras() + ", Cantidad: " + item.getCantidad());
+        }
+
         // Validar el inventario para cada ítem solicitado
         for (SolicitudDTO.ItemSolicitud item : solicitud.getItems()) {
-            // Consulta el producto por CodigoBarras en lugar de productoId
             Query query = productosRef.whereEqualTo("CodigoBarras", item.getCodigoBarras());
             ApiFuture<QuerySnapshot> querySnapshot = query.get();
             List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
@@ -74,6 +79,9 @@ public class SolicitudController {
         ApiFuture<DocumentReference> result = solicitudes.add(solicitudMap);
         return ResponseEntity.status(HttpStatus.CREATED).body("Solicitud creada con éxito con ID: " + result.get().getId());
     }
+
+
+  
 
 
     @PutMapping("/{id}/autorizar")

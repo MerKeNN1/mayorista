@@ -21,16 +21,20 @@ import java.util.stream.Collectors;
 public class ProductoController {
 
     @GetMapping
-    public List<ProductoDTO> getProductos() throws InterruptedException, ExecutionException {
+    public List<ProductoDTO> getProductos() throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference productosRef = db.collection("Productos");
         ApiFuture<QuerySnapshot> querySnapshot = productosRef.get();
+
         List<ProductoDTO> productos = new ArrayList<>();
         for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-            productos.add(document.toObject(ProductoDTO.class));
+            ProductoDTO producto = document.toObject(ProductoDTO.class);
+            productos.add(producto);
         }
         return productos;
     }
+}
+
 
 //    @GetMapping
 //    public List<ProductoDTO> getAllProductos() throws ExecutionException, InterruptedException {
@@ -53,4 +57,4 @@ public class ProductoController {
 //        }).collect(Collectors.toList());
 //    }
     
-}
+//}
