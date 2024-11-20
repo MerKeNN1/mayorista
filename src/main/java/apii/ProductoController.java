@@ -28,12 +28,22 @@ public class ProductoController {
 
         List<ProductoDTO> productos = new ArrayList<>();
         for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-            ProductoDTO producto = document.toObject(ProductoDTO.class);
+            // Crear un ProductoDTO solo con los campos necesarios
+            ProductoDTO producto = new ProductoDTO(
+                document.getString("CodigoBarras"),
+                document.getString("Nombre"),
+                document.getString("Descripción"),
+                document.getString("Marca"),
+                document.getString("Categoría"),
+                document.getLong("Inventario").intValue(),
+                document.getDouble("Precio2")
+            );
             productos.add(producto);
         }
         return productos;
     }
 }
+
 
 
 //    @GetMapping
