@@ -24,11 +24,11 @@ public class ProductoDTO {
     }
 
     // Getters y Setters
-    public String getId() {
+    public String getCodigoBarras() {
         return CodigoBarras;
     }
 
-    public void setId(String CodigoBarras) {
+    public void setCodigoBarras(String CodigoBarras) {
         this.CodigoBarras = CodigoBarras;
     }
 
