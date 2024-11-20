@@ -44,18 +44,18 @@ public class SolicitudController {
         // Validar el inventario para cada ítem solicitado
         for (SolicitudDTO.ItemSolicitud item : solicitud.getItems()) {
             // Consulta el producto por CodigoBarras en lugar de productoId
-            Query query = productosRef.whereEqualTo("CodigoBarras", item.getProductoId());
+            Query query = productosRef.whereEqualTo("CodigoBarras", item.getCodigoBarras());
             ApiFuture<QuerySnapshot> querySnapshot = query.get();
             List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
 
             if (documents.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: El producto " + item.getProductoId() + " no existe.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: El producto " + item.getCodigoBarras() + " no existe.");
             }
 
             DocumentSnapshot productoSnapshot = documents.get(0);
             Long inventarioActual = productoSnapshot.getLong("Inventario");
             if (inventarioActual == null || item.getCantidad() > inventarioActual) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: No hay suficiente inventario para el producto " + item.getProductoId());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: No hay suficiente inventario para el producto " + item.getCodigoBarras());
             }
         }
 
@@ -64,7 +64,7 @@ public class SolicitudController {
         solicitudMap.put("clienteId", solicitud.getClienteId());
         solicitudMap.put("items", solicitud.getItems().stream().map(item -> {
             Map<String, Object> itemMap = new HashMap<>();
-            itemMap.put("productoId", item.getProductoId());
+            itemMap.put("CodigoBarras", item.getCodigoBarras());
             itemMap.put("cantidad", item.getCantidad());
             return itemMap;
         }).collect(Collectors.toList()));

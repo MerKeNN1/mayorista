@@ -1,7 +1,7 @@
 package apii;
 
 public class ProductoDTO {
-    private String id;
+    private String CodigoBarras;
     private String categoria;
     private String descripcion;
     private String marca;
@@ -13,8 +13,8 @@ public class ProductoDTO {
     public ProductoDTO() {}
 
     // Constructor con todos los campos
-    public ProductoDTO(String id, String categoria, String descripcion, String marca, String nombre, Double precio,  Integer inventario) {
-        this.id = id;
+    public ProductoDTO(String CodigoBarras, String categoria, String descripcion, String marca, String nombre, Double precio,  Integer inventario) {
+        this.CodigoBarras = CodigoBarras;
         this.categoria = categoria;
         this.descripcion = descripcion;
         this.marca = marca;
@@ -25,11 +25,11 @@ public class ProductoDTO {
 
     // Getters y Setters
     public String getId() {
-        return id;
+        return CodigoBarras;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setId(String CodigoBarras) {
+        this.CodigoBarras = CodigoBarras;
     }
 
     public String getCategoria() {

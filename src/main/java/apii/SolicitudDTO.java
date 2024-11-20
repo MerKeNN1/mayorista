@@ -59,25 +59,25 @@ public class SolicitudDTO {
     
     // Clase interna para representar cada ítem de la solicitud
     public static class ItemSolicitud {
-        private String productoId;
+        private String CodigoBarras;
         private int cantidad;
 
         // Constructor vacío
         public ItemSolicitud() {}
 
         // Constructor con todos los campos
-        public ItemSolicitud(String productoId, int cantidad) {
-            this.productoId = productoId;
+        public ItemSolicitud(String CodigoBarras, int cantidad) {
+            this.CodigoBarras = CodigoBarras;
             this.cantidad = cantidad;
         }
 
         // Getters y Setters
-        public String getProductoId() {
-            return productoId;
+        public String getCodigoBarras() {
+            return CodigoBarras;
         }
 
-        public void setProductoId(String productoId) {
-            this.productoId = productoId;
+        public void setCodigoBarras(String CodigoBarras) {
+            this.CodigoBarras = CodigoBarras;
         }
 
         public int getCantidad() {
