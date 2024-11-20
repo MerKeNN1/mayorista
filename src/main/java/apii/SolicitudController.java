@@ -7,6 +7,9 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.FieldValue;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.Query;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.cloud.firestore.WriteResult;
 import java.util.HashMap;
@@ -40,13 +43,16 @@ public class SolicitudController {
 
         // Validar el inventario para cada ítem solicitado
         for (SolicitudDTO.ItemSolicitud item : solicitud.getItems()) {
-            DocumentReference productoRef = productosRef.document(item.getProductoId());
-            DocumentSnapshot productoSnapshot = productoRef.get().get();
+            // Consulta el producto por CodigoBarras en lugar de productoId
+            Query query = productosRef.whereEqualTo("CodigoBarras", item.getProductoId());
+            ApiFuture<QuerySnapshot> querySnapshot = query.get();
+            List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
 
-            if (!productoSnapshot.exists()) {
+            if (documents.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: El producto " + item.getProductoId() + " no existe.");
             }
 
+            DocumentSnapshot productoSnapshot = documents.get(0);
             Long inventarioActual = productoSnapshot.getLong("Inventario");
             if (inventarioActual == null || item.getCantidad() > inventarioActual) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: No hay suficiente inventario para el producto " + item.getProductoId());
@@ -68,6 +74,7 @@ public class SolicitudController {
         ApiFuture<DocumentReference> result = solicitudes.add(solicitudMap);
         return ResponseEntity.status(HttpStatus.CREATED).body("Solicitud creada con éxito con ID: " + result.get().getId());
     }
+
 
     @PutMapping("/{id}/autorizar")
     public String autorizarSolicitud(@PathVariable String id) throws ExecutionException, InterruptedException {
