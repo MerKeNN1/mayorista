@@ -2,8 +2,8 @@ package apii;
 
 public class ProductoDTO {
     private String CodigoBarras;
-    private String Categoria;
-    private String Descripcion;
+    private String Categoría;
+    private String Descripción;
     private String Marca;
     private String Nombre;
     private Double Precio1;
@@ -17,10 +17,10 @@ public class ProductoDTO {
     public ProductoDTO() {}
 
     // Constructor con todos los campos
-    public ProductoDTO(String CodigoBarras, String Categoria, String Descripcion, String Marca, String Nombre, Double Precio1, Integer Inventario, Double Costo, Double Precio2, Double Precio3, String Proveedor) {
+    public ProductoDTO(String CodigoBarras, String Categoría, String Descripción, String Marca, String Nombre, Double Precio1, Integer Inventario, Double Costo, Double Precio2, Double Precio3, String Proveedor) {
         this.CodigoBarras = CodigoBarras;
-        this.Categoria = Categoria;
-        this.Descripcion = Descripcion;
+        this.Categoría = Categoría;
+        this.Descripción = Descripción;
         this.Marca = Marca;
         this.Nombre = Nombre;
         this.Precio1 = Precio1;
@@ -40,20 +40,20 @@ public class ProductoDTO {
         this.CodigoBarras = CodigoBarras;
     }
 
-    public String getCategoria() {
-        return Categoria;
+    public String getCategoría() {
+        return Categoría;
     }
 
-    public void setCategoria(String Categoria) {
-        this.Categoria = Categoria;
+    public void setCategoría(String Categoria) {
+        this.Categoría = Categoria;
     }
 
-    public String getDescripcion() {
-        return Descripcion;
+    public String getDescripción() {
+        return Descripción;
     }
 
-    public void setDescripcion(String Descripcion) {
-        this.Descripcion = Descripcion;
+    public void setDescripción(String Descripción) {
+        this.Descripción = Descripción;
     }
 
     public String getMarca() {
