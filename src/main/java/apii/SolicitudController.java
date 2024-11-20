@@ -33,7 +33,7 @@ import org.springframework.web.client.RestTemplate;
 public class SolicitudController {
 
     @PostMapping
-    public String crearSolicitud(@RequestBody SolicitudDTO solicitud) throws ExecutionException, InterruptedException {
+    public ResponseEntity<?> crearSolicitud(@RequestBody SolicitudDTO solicitud) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference productosRef = db.collection("Productos");
         CollectionReference solicitudes = db.collection("Solicitudes");
@@ -44,12 +44,12 @@ public class SolicitudController {
             DocumentSnapshot productoSnapshot = productoRef.get().get();
 
             if (!productoSnapshot.exists()) {
-                return "Error: El producto " + item.getProductoId() + " no existe.";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: El producto " + item.getProductoId() + " no existe.");
             }
 
             Long inventarioActual = productoSnapshot.getLong("Inventario");
             if (inventarioActual == null || item.getCantidad() > inventarioActual) {
-                return "Error: No hay suficiente inventario para el producto " + item.getProductoId();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: No hay suficiente inventario para el producto " + item.getProductoId());
             }
         }
 
@@ -66,7 +66,7 @@ public class SolicitudController {
         solicitudMap.put("estado", "PENDIENTE"); // Estado inicial
 
         ApiFuture<DocumentReference> result = solicitudes.add(solicitudMap);
-        return "Solicitud creada con éxito con ID: " + result.get().getId();
+        return ResponseEntity.status(HttpStatus.CREATED).body("Solicitud creada con éxito con ID: " + result.get().getId());
     }
 
     @PutMapping("/{id}/autorizar")
@@ -91,7 +91,7 @@ public class SolicitudController {
                 if (inventarioActual == null || inventarioActual < cantidadSolicitada) {
                     return "Error: No hay suficiente inventario para el producto " + productoId;
                 }
-                
+
                 productoRef.update("Inventario", inventarioActual - cantidadSolicitada);
             }
 
@@ -112,7 +112,6 @@ public class SolicitudController {
         return "Solicitud " + id + " denegada con éxito: " + writeResult.get().getUpdateTime();
     }
 
-    
     @PostMapping("/{id}/pagar")
     public ResponseEntity<String> recibirPagoFicticio(@PathVariable String id, @RequestBody PaymentDTO payment) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
