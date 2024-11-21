@@ -5,18 +5,19 @@ package apii;
 import com.google.cloud.Timestamp;
 import java.util.List;
 
-
 public class SolicitudDTO {
+    private String id; // Nuevo campo para el ID de la solicitud
     private String clienteId;
     private List<ItemSolicitud> items;
     private Timestamp timestamp;
-    private String estado; // Nuevo campo para el estado de la solicitud
+    private String estado; // Campo para el estado de la solicitud
 
     // Constructor vacío
     public SolicitudDTO() {}
 
     // Constructor con todos los campos
-    public SolicitudDTO(String clienteId, List<ItemSolicitud> items, Timestamp timestamp, String estado) {
+    public SolicitudDTO(String id, String clienteId, List<ItemSolicitud> items, Timestamp timestamp, String estado) {
+        this.id = id;
         this.clienteId = clienteId;
         this.items = items;
         this.timestamp = timestamp;
@@ -24,6 +25,14 @@ public class SolicitudDTO {
     }
 
     // Getters y Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getClienteId() {
         return clienteId;
     }
@@ -88,3 +97,4 @@ public class SolicitudDTO {
         }
     }
 }
+

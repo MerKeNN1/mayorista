@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -32,49 +31,53 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class SolicitudController {
 
     @PostMapping
-    public ResponseEntity<?> crearSolicitud(@RequestBody SolicitudDTO solicitud) throws ExecutionException, InterruptedException {
-        Firestore db = FirestoreClient.getFirestore();
-        CollectionReference productosRef = db.collection("Productos");
-        CollectionReference solicitudes = db.collection("Solicitudes");
+public ResponseEntity<SolicitudDTO> crearSolicitud(@RequestBody SolicitudDTO solicitud) throws ExecutionException, InterruptedException {
+    Firestore db = FirestoreClient.getFirestore();
+    CollectionReference productosRef = db.collection("Productos");
+    CollectionReference solicitudes = db.collection("Solicitudes");
 
-        // Log de depuración para verificar el contenido del objeto solicitud
-        System.out.println("Recibida solicitud de cliente: " + solicitud.getClienteId());
-        for (SolicitudDTO.ItemSolicitud item : solicitud.getItems()) {
-            System.out.println("Item - CodigoBarras: " + item.getCodigoBarras() + ", Cantidad: " + item.getCantidad());
-        }
-
-        // Validar el inventario para cada ítem solicitado
-        for (SolicitudDTO.ItemSolicitud item : solicitud.getItems()) {
-            Query query = productosRef.whereEqualTo("CodigoBarras", item.getCodigoBarras());
-            ApiFuture<QuerySnapshot> querySnapshot = query.get();
-            List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
-
-            if (documents.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: El producto " + item.getCodigoBarras() + " no existe.");
-            }
-
-            DocumentSnapshot productoSnapshot = documents.get(0);
-            Long inventarioActual = productoSnapshot.getLong("Inventario");
-            if (inventarioActual == null || item.getCantidad() > inventarioActual) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: No hay suficiente inventario para el producto " + item.getCodigoBarras());
-            }
-        }
-
-        // Si todo está bien, crea la solicitud
-        Map<String, Object> solicitudMap = new HashMap<>();
-        solicitudMap.put("clienteId", solicitud.getClienteId());
-        solicitudMap.put("items", solicitud.getItems().stream().map(item -> {
-            Map<String, Object> itemMap = new HashMap<>();
-            itemMap.put("CodigoBarras", item.getCodigoBarras());
-            itemMap.put("cantidad", item.getCantidad());
-            return itemMap;
-        }).collect(Collectors.toList()));
-        solicitudMap.put("timestamp", Timestamp.now());
-        solicitudMap.put("estado", "PENDIENTE"); // Estado inicial
-
-        ApiFuture<DocumentReference> result = solicitudes.add(solicitudMap);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Solicitud creada con éxito con ID: " + result.get().getId());
+    // Log de depuración para verificar el contenido del objeto solicitud
+    System.out.println("Recibida solicitud de cliente: " + solicitud.getClienteId());
+    for (SolicitudDTO.ItemSolicitud item : solicitud.getItems()) {
+        System.out.println("Item - CodigoBarras: " + item.getCodigoBarras() + ", Cantidad: " + item.getCantidad());
     }
+
+    // Validar el inventario para cada ítem solicitado
+    for (SolicitudDTO.ItemSolicitud item : solicitud.getItems()) {
+        Query query = productosRef.whereEqualTo("CodigoBarras", item.getCodigoBarras());
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+
+        if (documents.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        DocumentSnapshot productoSnapshot = documents.get(0);
+        Long inventarioActual = productoSnapshot.getLong("Inventario");
+        if (inventarioActual == null || item.getCantidad() > inventarioActual) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    // Si todo está bien, crea la solicitud
+    Map<String, Object> solicitudMap = new HashMap<>();
+    solicitudMap.put("clienteId", solicitud.getClienteId());
+    solicitudMap.put("items", solicitud.getItems().stream().map(item -> {
+        Map<String, Object> itemMap = new HashMap<>();
+        itemMap.put("CodigoBarras", item.getCodigoBarras());
+        itemMap.put("cantidad", item.getCantidad());
+        return itemMap;
+    }).collect(Collectors.toList()));
+    solicitudMap.put("timestamp", Timestamp.now());
+    solicitudMap.put("estado", "PENDIENTE"); // Estado inicial
+
+    ApiFuture<DocumentReference> result = solicitudes.add(solicitudMap);
+    String solicitudId = result.get().getId();
+    solicitud.setId(solicitudId);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(solicitud);
+}
+
 
     @GetMapping("/{clienteId}")
     public ResponseEntity<List<SolicitudDTO>> obtenerSolicitudesPorCliente(@PathVariable String clienteId) throws ExecutionException, InterruptedException {
