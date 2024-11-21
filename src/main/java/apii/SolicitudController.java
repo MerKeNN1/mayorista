@@ -98,109 +98,24 @@ public class SolicitudController {
         return ResponseEntity.ok(solicitudes);
     }
 
-    @PutMapping("/{id}/autorizar")
-    public String autorizarSolicitud(@PathVariable String id) throws ExecutionException, InterruptedException {
-        Firestore db = FirestoreClient.getFirestore();
-        DocumentReference solicitudRef = db.collection("Solicitudes").document(id);
-        ApiFuture<DocumentSnapshot> future = solicitudRef.get();
-        DocumentSnapshot solicitudSnapshot = future.get();
-
-        if (solicitudSnapshot.exists() && "PENDIENTE".equals(solicitudSnapshot.getString("estado"))) {
-            List<Map<String, Object>> items = (List<Map<String, Object>>) solicitudSnapshot.get("items");
-            CollectionReference productosRef = db.collection("Productos");
-
-            // Verificar y actualizar el inventario
-            for (Map<String, Object> item : items) {
-                String productoId = (String) item.get("productoId");
-                int cantidadSolicitada = ((Long) item.get("cantidad")).intValue();
-                DocumentReference productoRef = productosRef.document(productoId);
-                DocumentSnapshot productoSnapshot = productoRef.get().get();
-                Long inventarioActual = productoSnapshot.getLong("Inventario");
-
-                if (inventarioActual == null || inventarioActual < cantidadSolicitada) {
-                    return "Error: No hay suficiente inventario para el producto " + productoId;
-                }
-
-                productoRef.update("Inventario", inventarioActual - cantidadSolicitada);
-            }
-
-            solicitudRef.update("estado", "APROBADA");
-            return "Solicitud " + id + " autorizada con éxito.";
-        } else {
-            return "Error: La solicitud no existe o ya ha sido procesada.";
-        }
-    }
-
-    @PutMapping("/{id}/denegar")
-    public String denegarSolicitud(@PathVariable String id) throws ExecutionException, InterruptedException {
-        Firestore db = FirestoreClient.getFirestore();
-        DocumentReference solicitudRef = db.collection("Solicitudes").document(id);
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("estado", "DENEGADA");
-        ApiFuture<WriteResult> writeResult = solicitudRef.update(updates);
-        return "Solicitud " + id + " denegada con éxito: " + writeResult.get().getUpdateTime();
-    }
-
     @PostMapping("/{id}/pagar")
-    public ResponseEntity<String> recibirPagoFicticio(@PathVariable String id, @RequestBody PaymentDTO payment) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> procesarPago(@PathVariable String id, @RequestBody Map<String, String> pagoRequest) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         DocumentReference solicitudRef = db.collection("Solicitudes").document(id);
         ApiFuture<DocumentSnapshot> future = solicitudRef.get();
         DocumentSnapshot solicitudSnapshot = future.get();
 
         if (solicitudSnapshot.exists() && "APROBADA".equals(solicitudSnapshot.getString("estado"))) {
-            // Simulamos la verificación del pago
-            boolean pagoVerificado = verificarPagoFicticio(payment);
+            // Simulación de la recepción y verificación del pago
+            String montoPago = pagoRequest.get("monto");
+            System.out.println("Monto recibido para el pago: " + montoPago);
 
-            if (pagoVerificado) {
-                List<Map<String, Object>> items = (List<Map<String, Object>>) solicitudSnapshot.get("items");
-                CollectionReference productosRef = db.collection("Productos");
+            // Actualizar el estado de la solicitud a "PAGADA"
+            solicitudRef.update("estado", "PAGADA");
 
-                // Descontar la cantidad del inventario
-                for (Map<String, Object> item : items) {
-                    String productoId = (String) item.get("productoId");
-                    int cantidadSolicitada = ((Long) item.get("cantidad")).intValue();
-                    DocumentReference productoRef = productosRef.document(productoId);
-                    productoRef.update("Inventario", FieldValue.increment(-cantidadSolicitada));
-                }
-
-                // Actualizar el estado de la solicitud a "PAGADA"
-                solicitudRef.update("estado", "PAGADA");
-
-                // Enviar notificación a la aplicación que usa la API
-                enviarNotificacionInventarioActualizado(solicitudSnapshot);
-
-                return ResponseEntity.ok("Pago recibido y solicitud " + id + " procesada con éxito.");
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: El pago no se pudo verificar.");
-            }
+            return ResponseEntity.ok("Pago recibido y solicitud " + id + " procesada con éxito.");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: La solicitud no existe o no está en estado APROBADA.");
         }
-    }
-
-    // Método simulado para verificar el pago
-    private boolean verificarPagoFicticio(PaymentDTO payment) {
-        // Simulación de verificación del pago
-        // Aquí puedes añadir lógica para validar los detalles del pago si es necesario
-        return true; // Simulación de verificación exitosa
-    }
-
-    // Método simulado para enviar notificación de inventario actualizado
-    private void enviarNotificacionInventarioActualizado(DocumentSnapshot solicitudSnapshot) {
-        // Lógica para enviar notificación a la aplicación externa
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://miaplicacion.com/api/inventario/actualizado";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        Map<String, Object> notificationData = new HashMap<>();
-        notificationData.put("solicitudId", solicitudSnapshot.getId());
-        notificationData.put("estado", "PAGADA");
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(notificationData, headers);
-        restTemplate.postForEntity(url, request, String.class);
-
-        System.out.println("Inventario actualizado para la solicitud: " + solicitudSnapshot.getId());
     }
 }
