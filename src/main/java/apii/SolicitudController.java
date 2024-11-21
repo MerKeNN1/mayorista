@@ -12,6 +12,7 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.cloud.firestore.WriteResult;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.client.RestTemplate;
@@ -80,9 +82,21 @@ public class SolicitudController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Solicitud creada con éxito con ID: " + result.get().getId());
     }
 
-
-  
-
+    @GetMapping("/{clienteId}")
+    public ResponseEntity<List<SolicitudDTO>> obtenerSolicitudesPorCliente(@PathVariable String clienteId) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        CollectionReference solicitudesRef = db.collection("Solicitudes");
+        Query query = solicitudesRef.whereEqualTo("clienteId", clienteId);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        List<SolicitudDTO> solicitudes = new ArrayList<>();
+        for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
+            SolicitudDTO solicitud = document.toObject(SolicitudDTO.class);
+            if (solicitud != null) {
+                solicitudes.add(solicitud);
+            }
+        }
+        return ResponseEntity.ok(solicitudes);
+    }
 
     @PutMapping("/{id}/autorizar")
     public String autorizarSolicitud(@PathVariable String id) throws ExecutionException, InterruptedException {
