@@ -80,20 +80,22 @@ public ResponseEntity<SolicitudDTO> crearSolicitud(@RequestBody SolicitudDTO sol
 
 
     @GetMapping("/{clienteId}")
-    public ResponseEntity<List<SolicitudDTO>> obtenerSolicitudesPorCliente(@PathVariable String clienteId) throws ExecutionException, InterruptedException {
-        Firestore db = FirestoreClient.getFirestore();
-        CollectionReference solicitudesRef = db.collection("Solicitudes");
-        Query query = solicitudesRef.whereEqualTo("clienteId", clienteId);
-        ApiFuture<QuerySnapshot> querySnapshot = query.get();
-        List<SolicitudDTO> solicitudes = new ArrayList<>();
-        for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-            SolicitudDTO solicitud = document.toObject(SolicitudDTO.class);
-            if (solicitud != null) {
-                solicitudes.add(solicitud);
-            }
+public ResponseEntity<List<SolicitudDTO>> obtenerSolicitudesPorCliente(@PathVariable String clienteId) throws ExecutionException, InterruptedException {
+    Firestore db = FirestoreClient.getFirestore();
+    CollectionReference solicitudesRef = db.collection("Solicitudes");
+    Query query = solicitudesRef.whereEqualTo("clienteId", clienteId);
+    ApiFuture<QuerySnapshot> querySnapshot = query.get();
+    List<SolicitudDTO> solicitudes = new ArrayList<>();
+    for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
+        SolicitudDTO solicitud = document.toObject(SolicitudDTO.class);
+        if (solicitud != null) {
+            solicitud.setId(document.getId()); // Asegúrate de que el ID se está asignando
+            solicitudes.add(solicitud);
         }
-        return ResponseEntity.ok(solicitudes);
     }
+    return ResponseEntity.ok(solicitudes);
+}
+
 
     @PostMapping("/{id}/pagar")
     public ResponseEntity<String> procesarPago(@PathVariable String id, @RequestBody Map<String, String> pagoRequest) throws ExecutionException, InterruptedException {
