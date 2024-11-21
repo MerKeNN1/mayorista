@@ -11,7 +11,6 @@ import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.cloud.FirestoreClient;
-import com.google.cloud.firestore.WriteResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,15 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/api/solicitudes")
@@ -113,7 +107,23 @@ public class SolicitudController {
             // Actualizar el estado de la solicitud a "PAGADA"
             solicitudRef.update("estado", "PAGADA");
 
-            return ResponseEntity.ok("Pago recibido y solicitud " + id + " procesada con éxito.");
+            // Descontar la cantidad del inventario en Firebase
+            List<Map<String, Object>> items = (List<Map<String, Object>>) solicitudSnapshot.get("items");
+            CollectionReference productosRef = db.collection("Productos");
+
+            for (Map<String, Object> item : items) {
+                String codigoBarras = (String) item.get("CodigoBarras");
+                int cantidadSolicitada = ((Long) item.get("cantidad")).intValue();
+                Query productoQuery = productosRef.whereEqualTo("CodigoBarras", codigoBarras);
+                ApiFuture<QuerySnapshot> productoSnapshot = productoQuery.get();
+
+                for (DocumentSnapshot productoDoc : productoSnapshot.get().getDocuments()) {
+                    DocumentReference productoRef = productoDoc.getReference();
+                    productoRef.update("Inventario", FieldValue.increment(-cantidadSolicitada));
+                }
+            }
+
+            return ResponseEntity.ok("Pago recibido y solicitud " + id + " procesada con éxito. Inventario actualizado.");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: La solicitud no existe o no está en estado APROBADA.");
         }
